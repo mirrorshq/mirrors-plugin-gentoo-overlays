@@ -99,7 +99,7 @@ def official_overlays():
 
 def wild_overlays():
     with mirrors.mirror_site_factory.ApiClient() as sock:
-        cfgDict = mirrors.plugin.params["config"]
+        cfgDict = mirrors.mirror_site_factory.params["config"]
 
         # send add messages
         for item in cfgDict:
@@ -167,9 +167,9 @@ def _genCfgJson(vcsType, url):
 ###############################################################################
 
 if __name__ == "__main__":
-    if mirrors.plugin.params["id"] == "gentoo-overlays":
+    if mirrors.mirror_site_factory.params["id"] == "gentoo-overlays":
         official_overlays()
-    elif mirrors.plugin.params["id"] == "gentoo-wild-overlays":
+    elif mirrors.mirror_site_factory.params["id"] == "gentoo-wild-overlays":
         wild_overlays()
     else:
         assert False

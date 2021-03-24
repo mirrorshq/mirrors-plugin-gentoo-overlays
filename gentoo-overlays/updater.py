@@ -6,9 +6,13 @@ import mirrors.plugin
 
 
 def main():
+    msId = mirrors.plugin.params["id"]
     dataDir = mirrors.plugin.params["storage-file"]["data-directory"]
     vcsType = mirrors.plugin.params["config"]["sync-type"]
     url = mirrors.plugin.params["config"]["sync-uri"]
+
+    print("Updater started:")
+    print("    %s: (%s) %s" % (msId, vcsType, url))
 
     if vcsType == "git":
         robust_layer.simple_git.pull(dataDir, reclone_on_failure=True, url=url)

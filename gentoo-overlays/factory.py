@@ -29,6 +29,24 @@ def official_overlays():
     ]
 
     with mirrors.mirror_site_factory.ApiClient() as sock:
+        # config
+        bAllOverlay = None          # enable all overlays
+        whileList = None            # overlay name white list
+        blackList = None            # overlay name black list
+        if True:
+            cfgDict = mirrors.mirror_site_factory.params["config"]
+            if "white-list" in cfgDict:
+                whileList = cfgDict["white-list"]
+                if "*" in whileList:
+                    bAllOverlay = True
+            else:
+                bAllOverlay = False
+                whileList = None
+            if "black-list" in cfgDict:
+                blackList = cfgDict["black-list"]
+            else:
+                blackList = []
+
         lastModifiedTm = None
         overlayDict = dict()
         while True:
@@ -56,10 +74,19 @@ def official_overlays():
             for nameTag in rootElem.xpath(".//repo/name"):
                 overlayName = nameTag.text
                 msId = _overName2MsId(overlayName)
+
+                # fiter overlays by configuration
+                if overlayName in blackList:
+                    continue
+                if not bAllOverlay and whileList is not None and overlayName not in whileList:
+                    continue
+
+                # check
                 if msId in newOverlayDict:
                     print("    Duplicate overlay \"%s\"" % (overlayName))
                     continue
 
+                # get overlay information
                 for vcsType, urlPrefix in cList:
                     for sourceTag in nameTag.xpath("../source"):
                         tVcsType = sourceTag.get("type")
@@ -72,6 +99,10 @@ def official_overlays():
                 if msId not in newOverlayDict:
                     print("    No appropriate source for overlay \"%s\"" % (overlayName))
                     continue
+
+                # FIXME: we only supports git and svn
+                if newOverlayDict[msId][0] not in ["git", "svn"]:
+                    del newOverlayDict[msId]
 
             # send remove messages
             for msId in overlayDict:

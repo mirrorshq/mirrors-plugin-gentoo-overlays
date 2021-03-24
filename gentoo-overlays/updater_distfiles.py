@@ -15,11 +15,15 @@ def main():
     tmpDir = mirrors.plugin.params["temp-directory"]
     stateDir = mirrors.plugin.params["state-directory"]
     dataDir = mirrors.plugin.params["storage-file"]["data-directory"]
-
-    # overlay files
     overlayDir = os.path.join(stateDir, "overlay-data")
     overlayVcsType = mirrors.plugin.params["config"]["sync-type"]
     overlayUrl = mirrors.plugin.params["config"]["sync-uri"]
+
+    print("Updater started:")
+    print("    %s: (%s) %s" % (msId, overlayVcsType, overlayUrl))
+
+    # overlay files
+    print("Refresh overlay files:")
     if overlayVcsType == "git":
         robust_layer.simple_git.pull(overlayDir, reclone_on_failure=True, url=overlayUrl)
     elif overlayVcsType == "svn":
@@ -32,6 +36,8 @@ def main():
         assert False
     else:
         assert False
+
+    print("Download distfiles:")
 
     # fakes config files
     reposDir = os.path.join(tmpDir, "repos.conf")

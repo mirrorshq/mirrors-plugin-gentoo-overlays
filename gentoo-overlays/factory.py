@@ -144,7 +144,7 @@ def _genDistfilesMetadataXml(msId):
     buf += '<mirror-site id="%s">\n' % (_msId2DistfilesMsId(msId))
     buf += '  <name>%s</name>\n' % (_msId2DistfilesMsId(msId))
     buf += '  <storage type="file"/>\n'
-    buf += '  <advertiser type="http"/>\n'
+    buf += '  <advertiser type="httpdir"/>\n'
     buf += '  <need-temp-directory/>\n'
     buf += '  <initializer>\n'
     buf += '    <executable>updater_distfiles.py</executable>\n'

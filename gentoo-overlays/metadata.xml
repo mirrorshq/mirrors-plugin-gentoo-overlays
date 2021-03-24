@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mirror-sites>
+  <mirror-site-factory id="gentoo-overlays">
+    <executable>factory.py</executable>
+  </mirror-site-factory>
+  <mirror-site-factory id="gentoo-wild-overlays">
+    <executable>factory.py</executable>
+  </mirror-site-factory>
+</mirror-sites>

@@ -7,8 +7,8 @@ import mirrors.plugin
 
 def main():
     dataDir = mirrors.plugin.params["storage-file"]["data-directory"]
-    vcsType = mirrors.plugin.params["config"]["vcs-type"]
-    url = mirrors.plugin.params["config"]["url"]
+    vcsType = mirrors.plugin.params["config"]["sync-type"]
+    url = mirrors.plugin.params["config"]["sync-uri"]
 
     if vcsType == "git":
         robust_layer.simple_git.pull(dataDir, reclone_on_failure=True, url=url)

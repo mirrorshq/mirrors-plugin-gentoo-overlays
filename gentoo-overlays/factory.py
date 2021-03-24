@@ -104,8 +104,8 @@ def wild_overlays():
         # send add messages
         for item in cfgDict:
             msId = _overName2MsId(item["overlay-name"])
-            vcsType = item["vcs-type"]
-            url = item["url"]
+            vcsType = item["sync-type"]
+            url = item["sync-uri"]
             sock.add_mirror_site(_genMetadataXml(msId), _genCfgJson(vcsType, url))
             sock.add_mirror_site(_genDistfilesMetadataXml(msId), _genCfgJson(vcsType, url))
 
@@ -158,8 +158,8 @@ def _genDistfilesMetadataXml(msId):
 
 def _genCfgJson(vcsType, url):
     data = dict()
-    data["vcs-type"] = vcsType
-    data["url"] = url
+    data["sync-type"] = vcsType
+    data["sync-uri"] = url
     return json.dumps(data)
 
 

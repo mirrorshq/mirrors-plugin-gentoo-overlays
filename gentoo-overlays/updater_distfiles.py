@@ -13,8 +13,8 @@ def main():
     dataDir = mirrors.plugin.params["storage-file"]["data-directory"]
 
     overlayDir = os.path.join(stateDir, "overlay-data")
-    overlayVcsType = mirrors.plugin.params["config"]["vcs-type"]
-    overlayUrl = mirrors.plugin.params["config"]["url"]
+    overlayVcsType = mirrors.plugin.params["config"]["sync-type"]
+    overlayUrl = mirrors.plugin.params["config"]["sync-uri"]
 
     if overlayVcsType == "git":
         robust_layer.simple_git.pull(overlayDir, reclone_on_failure=True, url=overlayUrl)

@@ -2,20 +2,24 @@
 # -*- coding: utf-8; tab-width: 4; indent-tabs-mode: t -*-
 
 import os
+import re
 import time
+import pathlib
 import subprocess
 import robust_layer
 import mirrors.plugin
 
 
 def main():
-    stateDir = mirrors.plugin.params["storage-file"]["state-directory"]
+    msId = mirrors.plugin.params["id"]
+    tmpDir = mirrors.plugin.params["temp-directory"]
+    stateDir = mirrors.plugin.params["state-directory"]
     dataDir = mirrors.plugin.params["storage-file"]["data-directory"]
 
+    # overlay files
     overlayDir = os.path.join(stateDir, "overlay-data")
     overlayVcsType = mirrors.plugin.params["config"]["sync-type"]
     overlayUrl = mirrors.plugin.params["config"]["sync-uri"]
-
     if overlayVcsType == "git":
         robust_layer.simple_git.pull(overlayDir, reclone_on_failure=True, url=overlayUrl)
     elif overlayVcsType == "svn":
@@ -29,15 +33,49 @@ def main():
     else:
         assert False
 
+    # fakes config files
+    reposDir = os.path.join(tmpDir, "repos.conf")
+    os.mkdir(reposDir)
+    _generateCfgReposFile(reposDir, msId, overlayDir, _Util.repoGetRepoName(overlayDir))
+
     # download overlay distfiles
     _Util.cmdExec("/usr/bin/emirrordist", "--mirror",
                   "--verbose",
                   "--ignore-default-opts",
+                  "--config-root=%s" % (tmpDir),
+                  "--repo=%s" % (msId),
                   "--distfiles=%s" % (dataDir),
                   "--delete")
 
 
+def _generateCfgReposFile(dstDir, overlayName, overlayDir, innerRepoName):
+    with open(os.path.join(dstDir, overlayName), "w") as f:
+        buf = ""
+        buf += "[%s]\n" % (innerRepoName)
+        buf += "auto-sync = no\n"
+        buf += "priority = 5000\n"
+        buf += "location = %s\n" % (overlayDir)
+        f.write(buf)
+
+
 class _Util:
+
+    @staticmethod
+    def repoGetRepoName(repoDir):
+        layoutFn = os.path.join(repoDir, "metadata", "layout.conf")
+        if os.path.exists(layoutFn):
+            m = re.search("repo-name = (\\S+)", pathlib.Path(layoutFn).read_text(), re.M)
+            if m is not None:
+                return m.group(1)
+
+        repoNameFn = os.path.join(repoDir, "profiles", "repo_name")
+        if os.path.exists(repoNameFn):
+            ret = pathlib.Path(repoNameFn).read_text().rstrip("\n")
+            ret = ret.replace(" ", "-")                         # it seems this translation is neccessary
+            return ret
+
+        # fatal error: can not get repoName
+        return None
 
     @staticmethod
     def cmdExec(cmd, *kargs):

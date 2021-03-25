@@ -6,8 +6,9 @@ import re
 import time
 import pathlib
 import subprocess
-import robust_layer
 import mirrors.plugin
+import robust_layer.simple_git
+import robust_layer.simple_subversion
 
 
 def main():

@@ -31,21 +31,30 @@ def official_overlays():
     with mirrors.mirror_site_factory.ApiClient() as sock:
         # config
         bAllOverlay = None          # enable all overlays
-        whileList = None            # overlay name white list
+        whiteList = None            # overlay name white list
         blackList = None            # overlay name black list
         if True:
             cfgDict = mirrors.mirror_site_factory.params["config"]
             if "white-list" in cfgDict:
-                whileList = cfgDict["white-list"]
-                if "*" in whileList:
+                whiteList = cfgDict["white-list"]
+                if "*" in whiteList:
                     bAllOverlay = True
+                    whiteList.remove("*")
+                else:
+                    bAllOverlay = False
             else:
                 bAllOverlay = False
-                whileList = None
+                whiteList = []
             if "black-list" in cfgDict:
                 blackList = cfgDict["black-list"]
             else:
                 blackList = []
+
+        # special config, do nothing and sleep forever
+        if not bAllOverlay and whiteList == []:
+            while True:
+                signal.pause()
+            return
 
         lastModifiedTm = None
         overlayDict = dict()
@@ -78,7 +87,7 @@ def official_overlays():
                 # fiter overlays by configuration
                 if overlayName in blackList:
                     continue
-                if not bAllOverlay and whileList is not None and overlayName not in whileList:
+                if not bAllOverlay and overlayName not in whiteList:
                     continue
 
                 # check

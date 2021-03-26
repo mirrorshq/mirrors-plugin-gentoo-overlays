@@ -63,7 +63,7 @@ def _generateFakeRepoGentooDir(dstDir):
 
 
 def _generateCfgReposFile(dstDir, overlayName, overlayDir, innerRepoName):
-    with open(os.path.join(dstDir, overlayName), "w") as f:
+    with open(os.path.join(dstDir, overlayName + ".conf"), "w") as f:
         buf = ""
         buf += "[%s]\n" % (innerRepoName)
         buf += "auto-sync = no\n"

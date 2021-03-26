@@ -41,8 +41,11 @@ def main():
     print("Download distfiles:")
 
     # fakes config files
+    repoGentooDir = os.path.join(tmpDir, "repo-gentoo")
+    _generateFakeRepoGentooDir(repoGentooDir)
     reposDir = os.path.join(tmpDir, "repos.conf")
     os.mkdir(reposDir)
+    _generateCfgReposFile(reposDir, "gentoo", repoGentooDir, "gentoo")
     _generateCfgReposFile(reposDir, msId, overlayDir, _Util.repoGetRepoName(overlayDir))
 
     # download overlay distfiles
@@ -53,6 +56,10 @@ def main():
                   "--repo=%s" % (msId),
                   "--distfiles=%s" % (dataDir),
                   "--delete")
+
+
+def _generateFakeRepoGentooDir(dstDir):
+    os.mkdir(dstDir)
 
 
 def _generateCfgReposFile(dstDir, overlayName, overlayDir, innerRepoName):
